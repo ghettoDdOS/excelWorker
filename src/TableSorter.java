@@ -1,11 +1,8 @@
-import java.awt.BorderLayout;
+import java.awt.*;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.TableModel;
@@ -16,15 +13,45 @@ public class TableSorter extends JPanel {
     private JTable jTable = new JTable(DataModel.getTableModel());
     private TableRowSorter<TableModel> rowSorter = new TableRowSorter<>(jTable.getModel());
     private JTextField jtfFilter = new JTextField();
+    public String getSelectedButtonText(ButtonGroup buttonGroup) {
+        for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+
+        return null;
+    }
     public TableSorter() {
+
         jTable.setRowSorter(rowSorter);
         JPanel panel = new JPanel(new BorderLayout());
+        JPanel filtersPanel = new JPanel(new GridLayout());
+        JRadioButton byCity = new JRadioButton("По городу");
+        byCity.setSelected(true);
+        JRadioButton bySight = new JRadioButton("По достопримечательности");
+        JRadioButton byPeoples = new JRadioButton("По населению");
+        JRadioButton ByCountry = new JRadioButton("По области");
+
+        ButtonGroup filterButtons = new ButtonGroup();
+        filterButtons.add(byCity);
+        filterButtons.add(bySight);
+        filterButtons.add(byPeoples);
+        filterButtons.add(ByCountry);
+
+        filtersPanel.add(byCity);
+        filtersPanel.add(bySight);
+        filtersPanel.add(byPeoples);
+        filtersPanel.add(ByCountry);
+        panel.add(filtersPanel, BorderLayout.SOUTH);
         panel.add(new JLabel("Поисковой запрос:"), BorderLayout.WEST);
         panel.add(jtfFilter, BorderLayout.CENTER);
         setLayout(new BorderLayout());
         add(panel, BorderLayout.SOUTH);
         add(new JScrollPane(jTable), BorderLayout.CENTER);
-        jtfFilter.getDocument().addDocumentListener(new DocumentListener(){
+        DocumentListener event = new DocumentListener(){
             @Override
             public void insertUpdate(DocumentEvent e) {
                 String text = jtfFilter.getText().toLowerCase();
@@ -34,10 +61,29 @@ public class TableSorter extends JPanel {
                     rowSorter.setStringConverter(new TableStringConverter() {
                         @Override
                         public String toString(TableModel model, int row, int column) {
-                            return model.getValueAt(row, column).toString().toLowerCase();
+                            int filterRow = 0;
+                            switch (getSelectedButtonText(filterButtons)){
+                                case "По городу":
+                                    filterRow = 0;
+                                    break;
+                                case "По достопримечательности":
+                                    filterRow = 3;
+                                    break;
+                                case "По населению":
+                                    filterRow = 2;
+                                    break;
+                                case "По области":
+                                    filterRow = 1;
+                                    break;
+                                default:
+                                    filterRow = 0;
+                                    break;
+                            }
+                            System.out.println(filterRow);
+                            return model.getValueAt(row, filterRow).toString().toLowerCase();
                         }
                     });
-                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
             }
             @Override
             public void removeUpdate(DocumentEvent e) {
@@ -52,6 +98,7 @@ public class TableSorter extends JPanel {
                 throw new UnsupportedOperationException("Ошибка");
             }
 
-        });
+        };
+        jtfFilter.getDocument().addDocumentListener(event);
     }
 }
