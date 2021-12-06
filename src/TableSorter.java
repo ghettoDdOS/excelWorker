@@ -1,7 +1,5 @@
 import java.awt.*;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Locale;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

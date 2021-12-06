@@ -2,11 +2,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 
 public class Interface {
@@ -133,7 +129,6 @@ public class Interface {
             }
         });
     }
-    //TODO: Уникальные города в области//Уникальные области//Отчеты достопремичательностей
     public static void main(String[] args) throws IOException {
         ExcelWorker.init();
         new Interface();
