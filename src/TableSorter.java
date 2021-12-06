@@ -79,7 +79,6 @@ public class TableSorter extends JPanel {
                                     filterRow = 0;
                                     break;
                             }
-                            System.out.println(filterRow);
                             return model.getValueAt(row, filterRow).toString().toLowerCase();
                         }
                     });
